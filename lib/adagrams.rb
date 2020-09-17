@@ -1,4 +1,3 @@
-#### TEST ONE ####
 def draw_letters
   letter_distribution = {
       A: 9,
@@ -38,44 +37,89 @@ def draw_letters
   return letters_in_hand
 end
 
-
-###TEST TWO ###
-
 def uses_available_letters?(input, letters_in_hand)
-  input.upcase!
+  hand_copy = letters_in_hand.clone
   input_array = input.chars
-  is_char_valid = true
   input_array.each do |char|
-    index = letters_in_hand.index(char)
-    if !index || !letters_in_hand.delete_at(index)
-      is_char_valid = false
+    index = hand_copy.index(char)
+    if !index || !hand_copy.delete_at(index)
+      return false
     end
   end
-  return is_char_valid
+  return true
 end
 
 
-# draw_letters = ["N", "E", "O", "K", "Y", "I", "O", "V", "N", "I"]
-# p draw_letters
-# input = "q"
-# p input
-#
-# p user_available_letters?(input, draw_letters)
+# 3
+def score_word(word)
+  letter_array = word.upcase.split(//)
+  word_score = 0
+  letter_array.each do |each_letter|
+    case each_letter
+    when "A", "E", "I", "O", "U", "L", "N", "R", "S", "T"
+      word_score += 1
+    when "D","G"
+      word_score += 2
+    when "B","C","M","P"
+      word_score += 3
+    when "F","H","V","W","Y"
+      word_score += 4
+    when "K"
+      word_score += 5
+    when "J", "X"
+      word_score += 8
+    when "Q","Z"
+      word_score += 10
+    end
+  end
+  if letter_array.length > 6
+    word_score += 8
+  end
+  return  word_score
+end
+
+#4
+def highest_score_from(words)
+  words_and_scores = words.map do |word|
+    {word: word, score: score_word(word)}
+  end
+  p words_and_scores
+
+  word_value = []
+  words_and_scores.each do |hash|
+    if word_value.empty?
+      word_value << hash
+    elsif hash[:score] > word_value[0][:score]
+      word_value.clear
+      word_value << hash
+    elsif hash[:score] == word_value[0][:score]
+      word_value << hash
+    end
+  end
+
+  p "word value", word_value
+
+  if word_value.length == 1
+    return word_value[0]
+  end
+
+  finalists = word_value
+
+  min_length = 10
+  winner_word = {}
+  finalists.each do |hash|
+    if hash[:word].length == 10
+      return hash
+    elsif hash[:word].length < min_length
+      min_length = hash[:word].length
+      winner_word = hash
+    end
+    return winner_word
+  end
+end
 
 
 
+words = ['BBBBBB', 'AAAAAAAAAA']
 
-# def uses_available_letters?(input, letters_in_hand)
-#   input.upcase!
-#   input_array = input.chars
-#   is_char_valid = false
-#   input_array.each do |char|
-#     index = letters_in_hand.index(char)
-#     if index && letters_in_hand.delete_at(index)
-#       is_char_valid = true
-#     end
-#   end
-#   return is_char_valid
-# end
-
-
+p highest_score_from(words)
