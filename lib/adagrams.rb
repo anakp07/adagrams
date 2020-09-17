@@ -80,42 +80,54 @@ end
 
 #4
 def highest_score_from(words)
-  words_and_scores = words.map do |word|
-    {word: word, score: score_word(word)}
+  # words_and_scores = words.map do |word|
+  #   {word => score_word(word)} # first change
+  # end
+  words_and_scores = {}
+  words.each do |word|
+    words_and_scores[word] = score_word(word)
   end
+  p "this is me printing it"
   p words_and_scores
 
-  word_value = []
-  words_and_scores.each do |hash|
-    if word_value.empty?
-      word_value << hash
-    elsif hash[:score] > word_value[0][:score]
-      word_value.clear
-      word_value << hash
-    elsif hash[:score] == word_value[0][:score]
-      word_value << hash
+  finalists = {}
+  #this block is reduces scores and top and ties are left together
+  max_score = 0
+  words_and_scores.each do |word, score|
+    p word,score
+    if finalists.empty?
+      finalists[word] = score
+      max_score = score
+    elsif score > max_score
+      finalists.clear
+      finalists[word] = score
+    elsif score == max_score
+      finalists[word] = score #review this later
     end
   end
 
-  p "word value", word_value
+  p "The finalists are:", finalists
+  #
+  # if finalists.length == 1
+  #   return finalists[0]
+  # end
 
-  if word_value.length == 1
-    return word_value[0]
-  end
-
-  finalists = word_value
-
+  #mmmm --> 12 and www --> 12
   min_length = 10
   winner_word = {}
-  finalists.each do |hash|
-    if hash[:word].length == 10
-      return hash
-    elsif hash[:word].length < min_length
-      min_length = hash[:word].length
-      winner_word = hash
+  finalists.each do |word, score|
+    if word.length == 10
+      p word
+      return {word: word, score: score}
+    elsif word.length < min_length
+      # min length = 4
+      min_length = word.length
+      winner_word = {word: word, score: score}
+      #winner is mmmm
     end
-    return winner_word
   end
+  p winner_word
+  return winner_word
 end
 
 
